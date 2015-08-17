@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}Home :: {{ super() }}{% endblock %}
+
+{% block navbar_items %}
+    {{ super() }}
+    <ul class="nav nav-pills">
+        {% if 'username' not in login_session %}
+            <li role="presentation"><a href="{{ url_for('show_login') }}">Login</a></li>
+        {% else %}
+            <li role="presentation"><a href="{{ url_for('gdisconnect') }}">Logout</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block inner_content %}
+    <div class="row">
+        <div class="col-md-3">
+            <h3>Categories</h3>
+            {% if 'username' not in login_session %}
+                <p>Please login to add categories</p>
+            {% else %}
+                <a href="{{ url_for('create_category') }}">Add Category</a>
+            {% endif %}
+            {% if categories|length != 0 %}
+                <ul id="category-names">
+                {% for category in categories %}
+                  <li><a href="{{ url_for('list_items', category_id=category.id) }}">{{ category.name }}</a></li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No categories defined yet!</p>
+            {% endif %}
+        </div>
+        <div class="col-md-9">
+            <h3>Latest Items</h3>
+            {% if 'username' not in login_session %}
+                <p>Please login to add items</p>
+            {% else %}
+                <a href="{{ url_for('create_item') }}">Add Item</a>
+            {% endif %}
+            {% if latest_items|length != 0 %}
+                <ul id="latest-items">
+                {% for latest_item in latest_items %}
+                  <li><a href="{{ url_for('show_item', item_id=latest_item.id) }}">{{ latest_item.title }}</a> ({{ category_names[latest_item.category_id] }})</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No items created yet!</p>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

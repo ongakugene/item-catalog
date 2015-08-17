@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}Item Detail :: {{ super() }}{% endblock %}
+
+{% block navbar_items %}
+    {{ super() }}
+    <ul class="nav nav-pills">
+        {% if 'username' not in login_session %}
+            <li role="presentation"><a href="{{ url_for('show_login') }}">Login</a></li>
+        {% else %}
+            <li role="presentation"><a href="{{ url_for('gdisconnect') }}">Logout</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block inner_content %}
+    <div class="row">
+        <h3>{{ item.title }}</h3>
+        <p class="item-description">{{ item.description }}</p>
+        {% if 'username' not in login_session %}
+            <p>Please login to edit or delete the item!</p>
+        {% else %}
+            <a href="{{ url_for('edit_item', item_id=item.id) }}">Edit</a>&nbsp;|
+            <a href="{{ url_for('delete_item', item_id=item.id) }}">Delete</a>
+        {% endif %}
+    </div>
+
+
+{% endblock %}

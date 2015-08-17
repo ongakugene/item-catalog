@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}Delete Item :: {{ super() }}{% endblock %}
+
+{% block navbar_items %}
+    {{ super() }}
+    <ul class="nav nav-pills">
+        {% if 'username' not in login_session %}
+            <li role="presentation"><a href="{{ url_for('show_login') }}">Login</a></li>
+        {% else %}
+            <li role="presentation"><a href="{{ url_for('gdisconnect') }}">Logout</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block inner_content %}
+    {% if deleted %}
+    <div class="row">
+        <div class="col-md-3">
+            <p class="bg-success message">Successfully Deleted!</p>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+            <div>
+                <p>Are you sure you want to delete {{ item.title }}?</p>
+                {{ wtf.quick_form(form) }}
+            </div>
+    </div>
+    {% endif %}
+{% endblock %}

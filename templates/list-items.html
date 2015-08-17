@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}Listing Items :: {{ super() }}{% endblock %}
+
+{% block navbar_items %}
+    {{ super() }}
+    <ul class="nav nav-pills">
+        {% if 'username' not in login_session %}
+            <li role="presentation"><a href="{{ url_for('show_login') }}">Login</a></li>
+        {% else %}
+            <li role="presentation"><a href="{{ url_for('gdisconnect') }}">Logout</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block inner_content %}
+    <div class="row">
+        <h3>Items registered under {{ category_name }} ({{ items|length }} items)</h3>
+        {% if items|length != 0 %}
+            <ul id="item-names">
+            {% for item in items %}
+              <li><a href="{{ url_for('show_item', item_id=item.id) }}">{{ item.title }}</a></li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No items defined for {{ category_name }} yet!</p>
+        {% endif %}
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='major.css') }}">
+{% endblock %}
+
+{% block title %}Item Catalog{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+            {% block navbar_items %}
+                <a class="navbar-brand" href="{{ url_for('index') }}">Home</a>
+            {% endblock %}
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% block inner_content %}
+        
+        {% endblock %}
+    </div>
+{% endblock %}

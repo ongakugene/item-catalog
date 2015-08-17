@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}Edit Item :: {{ super() }}{% endblock %}
+
+{% block navbar_items %}
+    {{ super() }}
+    <ul class="nav nav-pills">
+        {% if 'username' not in login_session %}
+            <li role="presentation"><a href="{{ url_for('show_login') }}">Login</a></li>
+        {% else %}
+            <li role="presentation"><a href="{{ url_for('gdisconnect') }}">Logout</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block inner_content %}
+    {% if edited %}
+    <div class="row">
+        <div class="col-md-3">
+            <p class="bg-success message">Successfully Edited!</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+            <div class="col-md-3">
+                {{ wtf.quick_form(form) }}
+            </div>
+    </div>
+{% endblock %}
