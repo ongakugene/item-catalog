@@ -384,4 +384,4 @@ def get_json():
 # Starting the app after creating the database
 if __name__ == '__main__':
     db.create_all()  # For creating the initial DB
-    app.run(debug=True)
+    app.run(debug=False)
