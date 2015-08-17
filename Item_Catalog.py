@@ -42,6 +42,9 @@ db = SQLAlchemy(app)
 
 # Model definitions
 class Category(db.Model):
+    """
+    Category class representing blueprint for categories
+    """
     __tablename__ = 'tbl_categories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(25), index=True, unique=True)
@@ -54,6 +57,9 @@ class Category(db.Model):
 
 
 class Item(db.Model):
+    """
+    Item class representing blueprint for items
+    """
     __tablename__ = 'tbl_items'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(30), index=True)
@@ -75,12 +81,18 @@ class Item(db.Model):
 
 # Form definitions
 class CategoryForm(Form):
+    """
+    Form for new category creation
+    """
     name = StringField('Enter new item name', validators=[DataRequired(),
                                                           Length(1, 30)])
     submit = SubmitField('Create')
 
 
 class ItemForm(Form):
+    """
+    Form for new item creation
+    """
     categories = []
 
     def __init__(self, categories):
@@ -99,12 +111,20 @@ class ItemForm(Form):
 
 
 class ItemDeleteForm(Form):
+    """
+    Form for item deletion
+    """
     submit = SubmitField('Yes')
 
 
 # Route definitions
 @app.route('/')
 def index():
+    """
+    The base index route.
+    Shows Categories, Latest items and Login button
+    Logged-in users see link to add items and categories
+    """
     categories = db.session.query(Category).all()
     latest_items = db.session.query(Item).\
         order_by(Item.date_created.desc()).limit(10).all()
@@ -119,6 +139,10 @@ def index():
 
 @app.route('/category/create', methods=['GET', 'POST'])
 def create_category():
+    """
+    This route is for creating categories.
+    Can be accessed by logged-in users only.
+    """
     if 'username' not in login_session:
         return redirect(url_for('show_login'))
     duplicate = None
@@ -140,6 +164,10 @@ def create_category():
 
 @app.route('/items/<category_id>')
 def list_items(category_id):
+    """
+    This route is for listing all items in a category.
+    Category ID is required in the URL.
+    """
     items = db.session.query(Item).filter_by(category_id=category_id).all()
     category = db.session.query(Category).filter_by(id=category_id).first()
     category_name = category.name
@@ -151,6 +179,10 @@ def list_items(category_id):
 
 @app.route('/item/<item_id>')
 def show_item(item_id):
+    """
+    This route is for listing details for an item.
+    Item ID is required in the URL.
+    """
     item = db.session.query(Item).filter_by(id=item_id).first()
     category = db.session.query(Category).\
         filter_by(id=item.category_id).first()
@@ -162,6 +194,10 @@ def show_item(item_id):
 
 @app.route('/item/create', methods=['GET', 'POST'])
 def create_item():
+    """
+    This route is for creating items.
+    Can be accessed by logged-in users only.
+    """
     if 'username' not in login_session:
         return redirect(url_for('show_login'))
     duplicate = None
@@ -190,6 +226,10 @@ def create_item():
 
 @app.route('/item/edit/<item_id>', methods=['GET', 'POST'])
 def edit_item(item_id):
+    """
+    This route is for editing items.
+    Can be accessed by logged-in users only.
+    """
     if 'username' not in login_session:
         return redirect(url_for('show_login'))
     edited = None
@@ -217,6 +257,10 @@ def edit_item(item_id):
 
 @app.route('/item/delete/<item_id>', methods=['GET', 'POST'])
 def delete_item(item_id):
+    """
+    This route is for deleting items.
+    Can be accessed by logged-in users only.
+    """
     if 'username' not in login_session:
         return redirect(url_for('show_login'))
     deleted = None
@@ -235,6 +279,9 @@ def delete_item(item_id):
 
 @app.route('/login')
 def show_login():
+    """
+    This route is for showing the Google login interface.
+    """
     state = ''.join(random.
                     choice(string.
                            ascii_uppercase + string.digits)
@@ -332,6 +379,9 @@ def gconnect():
 
 @app.route('/logout')
 def gdisconnect():
+    """
+    This route is for logging-out a logged-in user.
+    """
     # Only disconnect a connected user.
     access_token = login_session['access_token']
     if access_token is None:
@@ -367,6 +417,9 @@ def gdisconnect():
 
 @app.route('/catalog.json')
 def get_json():
+    """
+    This route provides a JSON endpoint for data.
+    """
     catalog = {}
     categories = db.session.query(Category).all()
     for category in categories:
@@ -386,6 +439,9 @@ def get_json():
 
 @app.route('/catalog.xml')
 def get_xml():
+    """
+    This route provides an XML endpoint for data.
+    """
     catalog = {}
     categories = db.session.query(Category).all()
     for category in categories:
