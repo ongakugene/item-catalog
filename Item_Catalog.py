@@ -4,6 +4,8 @@ import json
 import os
 from datetime import datetime
 
+import dicttoxml
+
 import httplib2
 import requests
 from flask import session as login_session
@@ -13,6 +15,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.wtf import Form
 from flask import make_response
+from flask import Response
 from wtforms import StringField, TextAreaField, SelectField, SubmitField
 from wtforms.validators import Length, DataRequired
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
@@ -379,6 +382,28 @@ def get_json():
             catalog[category.id]['items'][item.id]['description'] = \
                 item.description
     return jsonify(catalog)
+
+
+@app.route('/catalog.xml')
+def get_xml():
+    catalog = {}
+    categories = db.session.query(Category).all()
+    for category in categories:
+        catalog[str(category.id)] = {}
+        catalog[str(category.id)]['category-id'] = category.id
+        catalog[str(category.id)]['category-name'] = category.name
+        catalog[str(category.id)]['items'] = {}
+        items = db.session.query(Item).filter_by(category_id=category.id)
+        for item in items:
+            catalog[str(category.id)]['items'][str(item.id)] = {}
+            catalog[str(category.id)]['items'][str(item.id)]['item-id'] = \
+                item.id
+            catalog[str(category.id)]['items'][str(item.id)]['title'] = \
+                item.title
+            catalog[str(category.id)]['items'][str(item.id)]['description'] = \
+                item.description
+    xml = dicttoxml.dicttoxml(catalog)
+    return Response(xml, mimetype='text/xml')
 
 
 # Starting the app after creating the database
