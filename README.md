@@ -17,10 +17,15 @@ To run the project, Python needs to be installed on the system ::
 - Clone the repo: `git clone https://github.com/ongakugene/item-catalog.git`.
 - Install the following library dependencies if you do not have them already:   
 `pip install flask-sqlalchemy`
+
 `pip install flask-bootstrap`
+
 `pip install flask-wtf`
+
 `pip install oauth2client`
+
 `pip install requests`
+
 - On the shell, navigate into the project directory: `cd path/to/item-catalog`
 - If you do not want to use the test database and start with a clear db, please delete the file data.sqlite3 in the project directory.
 - The project can be run using the command: `python Item_Catalog.py`
