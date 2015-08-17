@@ -15,7 +15,8 @@ To run the project, Python needs to be installed on the system ::
 - [Download the latest release](https://github.com/ongakugene/item-catalog/archive/master.zip)
     or
 - Clone the repo: `git clone https://github.com/ongakugene/item-catalog.git`.
-- Install the following library dependencies if you do not have them already:   
+- Install the following library dependencies if you do not have them already:
+
 `pip install flask-sqlalchemy`
 
 `pip install flask-bootstrap`
