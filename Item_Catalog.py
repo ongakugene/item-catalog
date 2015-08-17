@@ -1,4 +1,11 @@
-import random, string, httplib2, json, requests, os
+import random
+import string
+import json
+import os
+from datetime import datetime
+
+import httplib2
+import requests
 from flask import session as login_session
 from flask import Flask, render_template, request
 from flask import jsonify, flash, redirect, url_for
@@ -8,7 +15,6 @@ from flask.ext.wtf import Form
 from flask import make_response
 from wtforms import StringField, TextAreaField, SelectField, SubmitField
 from wtforms.validators import Length, DataRequired
-from datetime import datetime
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 
 
@@ -67,7 +73,7 @@ class Item(db.Model):
 # Form definitions
 class CategoryForm(Form):
     name = StringField('Enter new item name', validators=[DataRequired(),
-                                                         Length(1, 30)])
+                                                          Length(1, 30)])
     submit = SubmitField('Create')
 
 
@@ -81,9 +87,10 @@ class ItemForm(Form):
                 self.categories.append((category.id, category.name))
 
     title = StringField('Enter new item name', validators=[DataRequired(),
-                                                         Length(1, 30)])
-    description = TextAreaField('Enter item description', validators=[DataRequired(),
-                                                         Length(1, 300)])
+                                                           Length(1, 30)])
+    description = TextAreaField('Enter item description',
+                                validators=[DataRequired(),
+                                            Length(1, 300)])
     category = SelectField('Select Category', choices=categories, coerce=int)
     submit = SubmitField('Create')
 
@@ -96,7 +103,8 @@ class ItemDeleteForm(Form):
 @app.route('/')
 def index():
     categories = db.session.query(Category).all()
-    latest_items = db.session.query(Item).order_by(Item.date_created.desc()).limit(10).all()
+    latest_items = db.session.query(Item).\
+        order_by(Item.date_created.desc()).limit(10).all()
     category_names = {}
     for category in categories:
         category_names[category.id] = category.name
@@ -122,7 +130,9 @@ def create_category():
             created = True
         else:
             duplicate = True
-    return render_template('create-category.html', form=form, created=created, duplicate=duplicate)
+    return render_template('create-category.html',
+                           form=form, created=created,
+                           duplicate=duplicate)
 
 
 @app.route('/items/<category_id>')
@@ -130,15 +140,21 @@ def list_items(category_id):
     items = db.session.query(Item).filter_by(category_id=category_id).all()
     category = db.session.query(Category).filter_by(id=category_id).first()
     category_name = category.name
-    return render_template('list-items.html', category_name=category_name, items=items, login_session=login_session)
+    return render_template('list-items.html',
+                           category_name=category_name,
+                           items=items,
+                           login_session=login_session)
 
 
 @app.route('/item/<item_id>')
 def show_item(item_id):
     item = db.session.query(Item).filter_by(id=item_id).first()
-    category = db.session.query(Category).filter_by(id=item.category_id).first()
+    category = db.session.query(Category).\
+        filter_by(id=item.category_id).first()
     category_name = category.name
-    return render_template('show-item.html', item=item, category_name=category_name, login_session=login_session)
+    return render_template('show-item.html',
+                           item=item, category_name=category_name,
+                           login_session=login_session)
 
 
 @app.route('/item/create', methods=['GET', 'POST'])
@@ -157,12 +173,16 @@ def create_item():
         form.description.data = ''
         form.category.data = ''
         if Item.query.filter_by(title=title).first() is None:
-            db.session.add(Item(title=title, description=description, category_id=category_id))
+            db.session.add(Item(title=title,
+                                description=description,
+                                category_id=category_id))
             db.session.commit()
             created = True
         else:
             duplicate = True
-    return render_template('create-item.html', form=form, created=created, duplicate=duplicate)
+    return render_template('create-item.html',
+                           form=form, created=created,
+                           duplicate=duplicate)
 
 
 @app.route('/item/edit/<item_id>', methods=['GET', 'POST'])
@@ -187,7 +207,9 @@ def edit_item(item_id):
         form.category.data = target_item.category_id
         db.session.commit()
         edited = True
-    return render_template('edit-item.html', form=form, edited=edited, login_session=login_session)
+    return render_template('edit-item.html',
+                           form=form, edited=edited,
+                           login_session=login_session)
 
 
 @app.route('/item/delete/<item_id>', methods=['GET', 'POST'])
@@ -202,12 +224,18 @@ def delete_item(item_id):
         db.session.delete(target_item)
         db.session.commit()
         deleted = True
-    return render_template('delete-item.html', form=form, item=target_item, deleted=deleted, login_session=login_session)
+    return render_template('delete-item.html',
+                           form=form, item=target_item,
+                           deleted=deleted,
+                           login_session=login_session)
 
 
 @app.route('/login')
 def show_login():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+    state = ''.join(random.
+                    choice(string.
+                           ascii_uppercase + string.digits)
+                    for x in xrange(32))
     login_session['state'] = state
     return render_template('login.html', state=state)
 
@@ -263,8 +291,8 @@ def gconnect():
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(
+            json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -290,7 +318,10 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;' \
+              'border-radius: 150px;' \
+              '-webkit-border-radius: 150px;' \
+              '-moz-border-radius: 150px;"> '
     flash("You are now logged in as %s" % login_session['username'])
     print "done!"
     return output
@@ -345,7 +376,8 @@ def get_json():
             catalog[category.id]['items'][item.id] = {}
             catalog[category.id]['items'][item.id]['item-id'] = item.id
             catalog[category.id]['items'][item.id]['title'] = item.title
-            catalog[category.id]['items'][item.id]['description'] = item.description
+            catalog[category.id]['items'][item.id]['description'] = \
+                item.description
     return jsonify(catalog)
 
 
