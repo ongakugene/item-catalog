@@ -31,3 +31,4 @@ To run the project, Python needs to be installed on the system ::
 - If you do not want to use the test database and start with a clear db, please delete the file data.sqlite3 in the project directory.
 - The project can be run using the command: `python Item_Catalog.py`
 - The project can be accessed at:  http://127.0.0.1:5000 or http://localhost:5000 using any web browser.
+- The application provides a JSON endpoint at:  http://127.0.0.1:5000/catalog.json 
